@@ -1,0 +1,146 @@
+﻿<kwin:kWindow x:Class="Listen2HTML.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Listen2HTML"
+        xmlns:vm="clr-namespace:Listen2Html.ViewModel"
+        xmlns:kwin="clr-namespace:Listen2HTML.Core"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="650" Width="565"
+        Style="{StaticResource BaseWindow}">
+    <Window.Resources>
+        <DataTemplate x:Key="ListenerTemplate">
+            <Grid Height="90" Background="{StaticResource BG_SubWindow}">
+                <Label Content="{Binding Url, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" FontSize="14"/>
+
+                <StackPanel Orientation="Horizontal" Margin="10, 30, 0, 0">
+                    <Grid>
+                        <Label Content="Next Update" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                        <TextBox Text="{Binding IntervalRemaining, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Margin="0, 30, 0, 0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="80" IsReadOnly="True" Foreground="{StaticResource FG_Component}"/>
+                    </Grid>
+
+                    <Grid Margin="20, 0, 0, 0">
+                        <Label Content="State" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                        <Label Content="&#xF137;" FontFamily="Segoe MDL2 Assets" Foreground="{Binding StateColor, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" FontSize="22" Margin="3, 23, 0, 0"/>
+                    </Grid>
+
+                    <Grid Margin="20, 0, 0, 0">
+                        <Label Content="Requests" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                        <TextBox Text="{Binding TotalRequests, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Margin="0, 30, 0, 0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="60" IsReadOnly="True" Foreground="{StaticResource FG_Component}"/>
+                    </Grid>
+
+                    <Grid Margin="20, 0, 0, 0">
+                        <Label Content="Changes" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                        <TextBox Text="{Binding Changes, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Margin="0, 30, 0, 0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="60" IsReadOnly="True" Foreground="{StaticResource FG_Component}"/>
+                    </Grid>
+
+                    <Grid Margin="20, 0, 0, 0">
+                        <Label Content="Update Rate" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                        <TextBox Text="{Binding UpdateInterval, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0, 30, 0, 0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="80" />
+                    </Grid>
+
+                    <Grid Margin="20, 0, 0, 0">
+                        <Button Command="{Binding PauseCommand}" Content="{Binding ActionState}" FontFamily="Segoe MDL2 Assets" FontSize="22" Foreground="{Binding ActionColor}" Height="40" Width="28" ToolTip="Pause / Start the Listener"/>
+                    </Grid>
+
+                    <Grid Margin="10, 0, 0, 0">
+                        <Button Command="{Binding RestartCommand}" Content="&#xE81C;" FontFamily="Segoe MDL2 Assets" FontSize="22" Foreground="{StaticResource FG_Interactable}" Height="40" Width="28" ToolTip="Restart The Timer"/>
+                    </Grid>
+
+                    <Grid Margin="10, 0, 0, 0">
+                        <Button Command="{Binding ShowHistoryCommand}" Content="&#xF0E3;" FontFamily="Segoe MDL2 Assets" FontSize="22" Foreground="{StaticResource FG_Interactable}" Height="40" Width="28" ToolTip="View Listener History"/>
+                    </Grid>
+                </StackPanel>
+
+                <Border HorizontalAlignment="Stretch" Margin="20, 0, 20, 0" BorderBrush="{StaticResource BG_Component}" BorderThickness="0, 0, 0, 1" />
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+    <Window.DataContext>
+        <vm:Listen2HtmlVM />
+    </Window.DataContext>
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="8, 4, 8, 8" />
+    </WindowChrome.WindowChrome>
+    <Grid>
+        <DockPanel>
+            <Grid DockPanel.Dock="Top" Height="30" Background="{StaticResource BG_Titlebar}" MouseDown="EnableDrag">
+                <Label Content="Listen2Html" FontSize="14" HorizontalAlignment="Center" Foreground="{StaticResource FG_Control_Disabled}" FontWeight="Light" IsHitTestVisible="False"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="WindowMinimize" Style="{StaticResource WindowingButton}" Click="WindowMiminizeClick">
+                        <Image Style="{StaticResource Windowing_Image}" Source="/Listen2Html;component/Resources/Icons/Windowing/Minimize.png" />
+                    </Button>
+
+                    <Button x:Name="WindowMaximize" Style="{StaticResource WindowingButton}" Click="WindowMaximizeClick">
+                        <Image Style="{StaticResource Windowing_MaxMinImage}"/>
+                    </Button>
+
+                    <Button x:Name="WindowClose" Style="{StaticResource WindowingButton_Close}" Click="WindowCloseClick">
+                        <Image Style="{StaticResource Windowing_Image}" Source="/Listen2Html;component/Resources/Icons/Windowing/Close.png" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+            
+            <Grid DockPanel.Dock="Bottom">
+                <Label FontSize="58" Content="Listen2HTML" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalAlignment="Center" Foreground="#2c2c2c" FontWeight="Light"/>
+
+                <DockPanel>
+                    <DataGrid DockPanel.Dock="Top" Background="Transparent" ItemsSource="{Binding Listeners}" AutoGenerateColumns="False" RowStyle="{StaticResource DataGridRowListener}" VerticalAlignment="Stretch" 
+                              CellStyle="{StaticResource DataGridCellListener}" >
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn CellTemplate="{StaticResource ListenerTemplate}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <Grid DockPanel.Dock="Bottom" Height="150" VerticalAlignment="Bottom" Background="{StaticResource BG_SubWindow}">
+                        <Label Content="Email Server Information" Foreground="{StaticResource FG_Component}" FontSize="18" HorizontalAlignment="Center" Height="30" VerticalAlignment="Top"/>
+
+                        <StackPanel Height="120" VerticalAlignment="Bottom">
+                            <Grid>
+                                <Grid>
+                                    <Label Content="Email Account: " VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                                    <TextBox Text="{Binding NewAuthAccount, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="80, 3, 0, 0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Foreground="{StaticResource FG_Component}"/>
+                                </Grid>
+
+                                <Grid Margin="300, 0, 0, 0">
+                                    <Label Content="Password:" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                                    <PasswordBox Name="pwbox" Margin="60, 3, 0, 0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Foreground="{StaticResource FG_Component}"/>
+                                </Grid>
+                            </Grid>
+
+                            <Grid>
+                                <Label Content="SMTP Server: " VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                                <TextBox Text="{Binding NewSmtpServer, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="80, 3, 0, 0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Foreground="{StaticResource FG_Component}"/>
+                            </Grid>
+
+                            <Grid>
+                                <Label Content="Send To Address: " VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                                <TextBox Text="{Binding NewToAddress, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="100, 3, 0, 0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="180" Foreground="{StaticResource FG_Component}"/>
+                            </Grid>
+
+                            <Grid Margin="0, 15, 0, 0">
+                                <Button Command="{Binding SendTestEmailCommand}" Content="Send Test Email"  Width="150" HorizontalAlignment="Left" Margin="70, 0, 0, 0" ToolTip="Send a test email to verify your information is working"/>
+                                <Button Command="{Binding UpdateUserInfoCommand}" CommandParameter="{Binding ElementName=pwbox}" Content="Update Email Info"  Width="150" HorizontalAlignment="Right" Margin="0, 0, 70, 0" ToolTip="Apply Updates to Email Info - You Must click this for updates to take effect!"/>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid DockPanel.Dock="Bottom" Height="70" VerticalAlignment="Bottom" Background="{StaticResource BG_SubWindow}">
+                        <Label Content="New Listener" Foreground="{StaticResource FG_Component}" FontSize="18" HorizontalAlignment="Center" Height="30" VerticalAlignment="Top"/>
+
+                        <Grid HorizontalAlignment="Center" Margin="0, 32, 0, 0">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="URL:" />
+                                <TextBox Text="{Binding NewListenerUrl, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0, 3, 0, 0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="280" Foreground="{StaticResource FG_Component}"/>
+                                <Button Command="{Binding NewListenerCommand}" Content="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="18" VerticalAlignment="Top" Foreground="#14C014" Height="28" Width="28" Margin="5, 0, 0, 0" ToolTip="Restart The Timer"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Border BorderBrush="{StaticResource BG_Toolbar2}" BorderThickness="0, 0, 0, 2" />
+                    </Grid>
+                </DockPanel>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</kwin:kWindow>
